@@ -1,47 +1,76 @@
-const { MessageEmbed, } = require('discord.js');
-const {prefix} = require("../config.json")
-const morseAlphabet = require("./decode/morseMap.json")
+const MORSE_CODE = {  
+    "-----":"0",
+    ".----":"1",
+    "..---":"2",
+    "...--":"3",
+    "....-":"4",
+    ".....":"5",
+    "-....":"6",
+    "--...":"7",
+    "---..":"8",
+    "----.":"9",
+    ".-":"A",
+    "-...":"B",
+    "-.-.":"C",
+    "-..":"D",
+    ".":"E",
+    "..-.":"F",
+    "--.":"G",
+    "....":"H",
+    "..":"I",
+    ".---":"J",
+    "-.-":"K",
+    ".-..":"L",
+    "--":"M",
+    "-.":"N",
+    "---":"O",
+    ".--.":"P",
+    "--.-":"Q",
+    ".-.":"R",
+    "...":"S",
+    "-":"T",
+    "..-":"U",
+    "...-":"V",
+    ".--":"W",
+    "-..-":"X",
+    "-.--":"Y",
+    "--..":"Z",
+    "-.-.--":"!",
+    ".-.-.-":".",
+    "--..--":","
+};
 
-module.exports = (client) => {
-    client.on('message', message => {
-        function createEmbed(name, value) {
-            const embed = new MessageEmbed()
-            .setColor('#2bc8fb')
-            .setTitle('Decrypt messages ')
-            .addFields(
-                {
-                    "name": name,
-                    "value": value,
-                    "inline": true
-                  }
-            )
-            .setTimestamp()
+decodeSymbol = function(morse){
+    return MORSE_CODE[morse]
+}
+
+decodeMorse = function(morseCode){
+    res = ''
+
+    words =  morseCode.trim().split("   ")
+    // You can use MORSE_CODE[morse]
+    symbols = []
+    for (i = 0;i < words.length; i++){
+        symbols[i] = words[i].split(" ")
+    }
+
+    for(i= 0; i< symbols.length;i++){
+        if (i>0) res += " "
+        for(j = 0; j< symbols[i].length;j++){
+            res += decodeSymbol(symbols[i][j])
+        }
         
-            return message.channel.send({embeds: [embed]})
-        }
+    }
+    return(res)
+  }
+//.... . -.--   .--- ..- -.. .
 
-        if(!message.content.startsWith(prefix) || message.author.bot) return;
+input = document.getElementById("input")
+output = document.getElementById("output")
 
-        const args = message.content.slice(prefix.length).trim().split(' ')
-        const command = args.shift().toLowerCase();
-    
-        if (command === "morse"){
-            if(!args.length){
-                createEmbed('*Error!*', 'Please input a morse code message to decode.')
-            } else {
-                function decodeMorse(morseCode) {
-                    return morseCode.map(
-                        a => a
-                          .split(' ')
-                          .map(
-                            b => morseAlphabet[b]
-                          ).join('')
-                    ).join('');
-                }
-                var decoded = decodeMorse(args);
+output.defaultValue = "result"
+input.defaultValue = "input morse"
 
-                createEmbed('*Decoded your morse code message!*', decoded)
-            }
-        }
-    })
+input.oninput = function(){
+    output.value = decodeMorse(input.value)
 }
