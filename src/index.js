@@ -1,76 +1,76 @@
-const MORSE_CODE = {  
-    "-----":"0",
-    ".----":"1",
-    "..---":"2",
-    "...--":"3",
-    "....-":"4",
-    ".....":"5",
-    "-....":"6",
-    "--...":"7",
-    "---..":"8",
-    "----.":"9",
-    ".-":"A",
-    "-...":"B",
-    "-.-.":"C",
-    "-..":"D",
-    ".":"E",
-    "..-.":"F",
-    "--.":"G",
-    "....":"H",
-    "..":"I",
-    ".---":"J",
-    "-.-":"K",
-    ".-..":"L",
-    "--":"M",
-    "-.":"N",
-    "---":"O",
-    ".--.":"P",
-    "--.-":"Q",
-    ".-.":"R",
-    "...":"S",
-    "-":"T",
-    "..-":"U",
-    "...-":"V",
-    ".--":"W",
-    "-..-":"X",
-    "-.--":"Y",
-    "--..":"Z",
-    "-.-.--":"!",
-    ".-.-.-":".",
-    "--..--":","
+const MORSE_TABLE = {
+    '.-':     'a',
+    '-...':   'b',
+    '-.-.':   'c',
+    '-..':    'd',
+    '.':      'e',
+    '..-.':   'f',
+    '--.':    'g',
+    '....':   'h',
+    '..':     'i',
+    '.---':   'j',
+    '-.-':    'k',
+    '.-..':   'l',
+    '--':     'm',
+    '-.':     'n',
+    '---':    'o',
+    '.--.':   'p',
+    '--.-':   'q',
+    '.-.':    'r',
+    '...':    's',
+    '-':      't',
+    '..-':    'u',
+    '...-':   'v',
+    '.--':    'w',
+    '-..-':   'x',
+    '-.--':   'y',
+    '--..':   'z',
+    '.----':  '1',
+    '..---':  '2',
+    '...--':  '3',
+    '....-':  '4',
+    '.....':  '5',
+    '-....':  '6',
+    '--...':  '7',
+    '---..':  '8',
+    '----.':  '9',
+    '-----':  '0',
 };
 
-decodeSymbol = function(morse){
-    return MORSE_CODE[morse]
+function decode(expr) {
+    let letterArr = [];
+    let reverceMorse = {};
+    for (let name in MORSE_TABLE) {
+        reverceMorse[Object.values(MORSE_TABLE[name])] = name;
+    }
+    for(let letter in reverceMorse) {
+        let zeros = 10 - reverceMorse[letter].length *2 ;
+        let str = '0';
+        str = str.repeat(zeros);
+        reverceMorse[letter] = str + reverceMorse[letter].split('').map(item => {
+            return item == '.' ? item =  '10' : item =  '11';
+        }).join('');
+    }  
+    reverceMorse[' '] = '**********';
+    console.log(reverceMorse);
+    for(let i = 0; i < expr.length; i = i + 10){
+        letterArr.push(expr.slice(i, i+ 10));
+    }
+    let result = '';
+    
+        letterArr.map(item => {
+            for (let i in reverceMorse) {
+                if (reverceMorse[i] == item)  {
+                    result += i;
+                }
+            }
+        });
+        return result;
+    
+
+
 }
-
-decodeMorse = function(morseCode){
-    res = ''
-
-    words =  morseCode.trim().split("   ")
-    // You can use MORSE_CODE[morse]
-    symbols = []
-    for (i = 0;i < words.length; i++){
-        symbols[i] = words[i].split(" ")
-    }
-
-    for(i= 0; i< symbols.length;i++){
-        if (i>0) res += " "
-        for(j = 0; j< symbols[i].length;j++){
-            res += decodeSymbol(symbols[i][j])
-        }
-        
-    }
-    return(res)
-  }
-//.... . -.--   .--- ..- -.. .
-
-input = document.getElementById("input")
-output = document.getElementById("output")
-
-output.defaultValue = "result"
-input.defaultValue = "input morse"
-
-input.oninput = function(){
-    output.value = decodeMorse(input.value)
+console.log(decode('00101010100000000010001011101000101110100000111111**********00001011110000111111000010111000101110100000111010'));
+module.exports = {
+    decode
 }
